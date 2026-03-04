@@ -179,6 +179,11 @@ jobs:
       - name: Commit test report
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
+          if [ ! -f results/test_report.md ]; then
+            echo "No report file found, nothing to commit."
+            exit 0
+          fi
+
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
