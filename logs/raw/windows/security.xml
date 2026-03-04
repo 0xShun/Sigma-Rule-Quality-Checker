@@ -1,0 +1,95 @@
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing" Guid="{54849625-5478-4994-A5BA-3E3B0328C30D}"/>
+    <EventID>4624</EventID>
+    <Version>2</Version>
+    <Level>0</Level>
+    <Task>12544</Task>
+    <Opcode>0</Opcode>
+    <Keywords>0x8020000000000000</Keywords>
+    <TimeCreated SystemTime="2024-03-04T08:15:32.123456700Z"/>
+    <Channel>Security</Channel>
+    <Computer>WORKSTATION01.corp.local</Computer>
+    <Security UserID="S-1-5-18"/>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserSid">S-1-5-18</Data>
+    <Data Name="SubjectUserName">SYSTEM</Data>
+    <Data Name="TargetUserName">jsmith</Data>
+    <Data Name="TargetDomainName">CORP</Data>
+    <Data Name="LogonType">3</Data>
+    <Data Name="AuthenticationPackageName">NTLM</Data>
+    <Data Name="IpAddress">192.168.1.45</Data>
+    <Data Name="IpPort">51234</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing" Guid="{54849625-5478-4994-A5BA-3E3B0328C30D}"/>
+    <EventID>4688</EventID>
+    <Version>2</Version>
+    <Level>0</Level>
+    <Task>13312</Task>
+    <TimeCreated SystemTime="2024-03-04T08:20:11.000000000Z"/>
+    <Channel>Security</Channel>
+    <Computer>WORKSTATION01.corp.local</Computer>
+    <Security UserID="S-1-5-21-3623811015-3361044348-30300820-1013"/>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">jsmith</Data>
+    <Data Name="NewProcessName">C:\Windows\System32\cmd.exe</Data>
+    <Data Name="CommandLine">cmd.exe /c whoami</Data>
+    <Data Name="ParentProcessName">C:\Windows\explorer.exe</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing" Guid="{54849625-5478-4994-A5BA-3E3B0328C30D}"/>
+    <EventID>4720</EventID>
+    <Level>0</Level>
+    <TimeCreated SystemTime="2024-03-04T09:00:00.000000000Z"/>
+    <Channel>Security</Channel>
+    <Computer>WORKSTATION01.corp.local</Computer>
+    <Security UserID="S-1-5-21-3623811015-3361044348-30300820-1013"/>
+  </System>
+  <EventData>
+    <Data Name="TargetUserName">newbackdoor</Data>
+    <Data Name="TargetDomainName">WORKSTATION01</Data>
+    <Data Name="SubjectUserName">jsmith</Data>
+    <Data Name="SubjectDomainName">CORP</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing" Guid="{54849625-5478-4994-A5BA-3E3B0328C30D}"/>
+    <EventID>4688</EventID>
+    <Level>0</Level>
+    <TimeCreated SystemTime="2024-03-04T09:05:00.000000000Z"/>
+    <Channel>Security</Channel>
+    <Computer>WORKSTATION01.corp.local</Computer>
+    <Security UserID="S-1-5-21-3623811015-3361044348-30300820-1013"/>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">jsmith</Data>
+    <Data Name="NewProcessName">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+    <Data Name="CommandLine">powershell.exe -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQA</Data>
+    <Data Name="ParentProcessName">C:\Windows\explorer.exe</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing" Guid="{54849625-5478-4994-A5BA-3E3B0328C30D}"/>
+    <EventID>4688</EventID>
+    <Level>0</Level>
+    <TimeCreated SystemTime="2024-03-04T09:10:00.000000000Z"/>
+    <Channel>Security</Channel>
+    <Computer>WORKSTATION01.corp.local</Computer>
+    <Security UserID="S-1-5-21-3623811015-3361044348-30300820-1013"/>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">jsmith</Data>
+    <Data Name="NewProcessName">C:\Windows\System32\schtasks.exe</Data>
+    <Data Name="CommandLine">schtasks.exe /create /tn "Updater" /tr "C:\tmp\payload.exe" /sc onlogon</Data>
+    <Data Name="ParentProcessName">C:\Windows\System32\cmd.exe</Data>
+  </EventData>
+</Event>
