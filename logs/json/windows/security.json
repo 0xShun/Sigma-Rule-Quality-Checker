@@ -1,0 +1,97 @@
+[
+  {
+    "provider_name": "Microsoft-Windows-Security-Auditing",
+    "provider_guid": "{54849625-5478-4994-A5BA-3E3B0328C30D}",
+    "eventid": "4624",
+    "version": "2",
+    "level": "0",
+    "task": "12544",
+    "opcode": "0",
+    "keywords": "0x8020000000000000",
+    "channel": "Security",
+    "computer": "WORKSTATION01.corp.local",
+    "timestamp": "2024-03-04T08:15:32.123456700Z",
+    "security_user_id": "S-1-5-18",
+    "event_data": {
+      "SubjectUserSid": "S-1-5-18",
+      "SubjectUserName": "SYSTEM",
+      "TargetUserName": "jsmith",
+      "TargetDomainName": "CORP",
+      "LogonType": "3",
+      "AuthenticationPackageName": "NTLM",
+      "IpAddress": "192.168.1.45",
+      "IpPort": "51234"
+    },
+    "log_type": "windows"
+  },
+  {
+    "provider_name": "Microsoft-Windows-Security-Auditing",
+    "provider_guid": "{54849625-5478-4994-A5BA-3E3B0328C30D}",
+    "eventid": "4688",
+    "version": "2",
+    "level": "0",
+    "task": "13312",
+    "channel": "Security",
+    "computer": "WORKSTATION01.corp.local",
+    "timestamp": "2024-03-04T08:20:11.000000000Z",
+    "security_user_id": "S-1-5-21-3623811015-3361044348-30300820-1013",
+    "event_data": {
+      "SubjectUserName": "jsmith",
+      "NewProcessName": "C:\\Windows\\System32\\cmd.exe",
+      "CommandLine": "cmd.exe /c whoami",
+      "ParentProcessName": "C:\\Windows\\explorer.exe"
+    },
+    "log_type": "windows"
+  },
+  {
+    "provider_name": "Microsoft-Windows-Security-Auditing",
+    "provider_guid": "{54849625-5478-4994-A5BA-3E3B0328C30D}",
+    "eventid": "4720",
+    "level": "0",
+    "channel": "Security",
+    "computer": "WORKSTATION01.corp.local",
+    "timestamp": "2024-03-04T09:00:00.000000000Z",
+    "security_user_id": "S-1-5-21-3623811015-3361044348-30300820-1013",
+    "event_data": {
+      "TargetUserName": "newbackdoor",
+      "TargetDomainName": "WORKSTATION01",
+      "SubjectUserName": "jsmith",
+      "SubjectDomainName": "CORP"
+    },
+    "log_type": "windows"
+  },
+  {
+    "provider_name": "Microsoft-Windows-Security-Auditing",
+    "provider_guid": "{54849625-5478-4994-A5BA-3E3B0328C30D}",
+    "eventid": "4688",
+    "level": "0",
+    "channel": "Security",
+    "computer": "WORKSTATION01.corp.local",
+    "timestamp": "2024-03-04T09:05:00.000000000Z",
+    "security_user_id": "S-1-5-21-3623811015-3361044348-30300820-1013",
+    "event_data": {
+      "SubjectUserName": "jsmith",
+      "NewProcessName": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "CommandLine": "powershell.exe -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQA",
+      "ParentProcessName": "C:\\Windows\\explorer.exe"
+    },
+    "log_type": "windows"
+  },
+  {
+    "provider_name": "Microsoft-Windows-Security-Auditing",
+    "provider_guid": "{54849625-5478-4994-A5BA-3E3B0328C30D}",
+    "eventid": "4688",
+    "level": "0",
+    "channel": "Security",
+    "computer": "WORKSTATION01.corp.local",
+    "timestamp": "2024-03-04T09:10:00.000000000Z",
+    "security_user_id": "S-1-5-21-3623811015-3361044348-30300820-1013",
+    "event_data": {
+      "SubjectUserName": "jsmith",
+      "NewProcessName": "C:\\Windows\\System32\\schtasks.exe",
+      "CommandLine": "schtasks.exe /create /tn \"Updater\" /tr \"C:\\tmp\\payload.exe\" /sc onlogon",
+      "ParentProcessName": "C:\\Windows\\System32\\cmd.exe"
+    },
+    "log_type": "windows"
+  }
+]
