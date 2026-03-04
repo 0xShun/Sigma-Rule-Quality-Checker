@@ -13,6 +13,7 @@ Exit codes:
 Usage:
     python3 scripts/test_sigma_rules.py
     python3 scripts/test_sigma_rules.py --type windows
+    python3 scripts/test_sigma_rules.py --rule-files rules/apache/sqli.yml rules/windows/cmd.yml
     python3 scripts/test_sigma_rules.py --report-file results/test_report.md
 """
 
@@ -352,24 +353,56 @@ def test_rule(rule_path: Path, log_type: str) -> RuleResult:
     return result
 
 
-def run_tests(log_types: list[str]) -> list[RuleResult]:
-    """Run all rules for the given log types and return results."""
+def run_tests(
+    log_types: list[str],
+    explicit_files: list[Path] | None = None,
+) -> list[RuleResult]:
+    """
+    Run rules and return results.
+
+    If explicit_files is provided, only those files are tested (used when the
+    workflow detects which specific rule files were changed in the push).
+    log_types is still used to determine which JSON logs to match against.
+    """
     all_results: list[RuleResult] = []
 
-    for log_type in log_types:
-        rules_dir = RULES_ROOT / log_type
-        if not rules_dir.exists():
-            log.warning("Rules directory not found, skipping: %s", rules_dir)
-            continue
+    # Build the list of (rule_path, log_type) pairs to test
+    work: list[tuple[Path, str]] = []
 
-        rule_files = sorted(rules_dir.rglob("*.yml"))
-        if not rule_files:
-            log.info("[%s] No rule files found.", log_type)
-            continue
+    if explicit_files:
+        for rule_path in explicit_files:
+            # Derive log_type from the parent folder name: rules/<log_type>/rule.yml
+            log_type = rule_path.parent.name
+            if log_type not in LOG_TYPES:
+                log.warning("Cannot determine log_type for %s (parent folder %r not in LOG_TYPES), skipping.",
+                            rule_path.name, log_type)
+                continue
+            work.append((rule_path, log_type))
+    else:
+        for log_type in log_types:
+            rules_dir = RULES_ROOT / log_type
+            if not rules_dir.exists():
+                log.warning("Rules directory not found, skipping: %s", rules_dir)
+                continue
+            rule_files = sorted(rules_dir.rglob("*.yml"))
+            if not rule_files:
+                log.info("[%s] No rule files found.", log_type)
+                continue
+            for rule_path in rule_files:
+                work.append((rule_path, log_type))
 
-        log.info("[%s] Testing %d rule(s)...", log_type, len(rule_files))
+    if not work:
+        return all_results
 
-        for rule_path in rule_files:
+    # Group by log_type for cleaner log output
+    by_type: dict[str, list[Path]] = {}
+    for rule_path, log_type in work:
+        by_type.setdefault(log_type, []).append(rule_path)
+
+    for log_type, files in by_type.items():
+        log.info("[%s] Testing %d rule(s)...", log_type, len(files))
+
+        for rule_path in sorted(files):
             log.info("  Rule: %s", rule_path.name)
             result = test_rule(rule_path, log_type)
 
@@ -485,10 +518,25 @@ def main():
         default=RESULTS_ROOT / "test_report.md",
         help="Path to write the Markdown report (default: results/test_report.md).",
     )
+    parser.add_argument(
+        "--rule-files",
+        nargs="+",
+        type=Path,
+        metavar="RULE_FILE",
+        help="Explicit rule file path(s) to test. Derives log_type from parent folder name.",
+    )
     args = parser.parse_args()
 
-    types_to_test = [args.type] if args.type else LOG_TYPES
-    results       = run_tests(types_to_test)
+    # --rule-files takes priority; --type is ignored when files are explicit
+    if args.rule_files:
+        explicit = [p for p in args.rule_files if p.exists()]
+        missing  = [p for p in args.rule_files if not p.exists()]
+        for m in missing:
+            log.warning("Rule file not found, skipping: %s", m)
+        results = run_tests(LOG_TYPES, explicit_files=explicit)
+    else:
+        types_to_test = [args.type] if args.type else LOG_TYPES
+        results       = run_tests(types_to_test)
 
     if not results:
         log.warning("No rules were tested.")

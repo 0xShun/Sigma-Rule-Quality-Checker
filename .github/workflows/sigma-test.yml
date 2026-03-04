@@ -1,47 +1,197 @@
-name: Sigma Rule Tester
+name: Test Sigma Rules
 
 on:
   push:
     paths:
-      - 'rules/**.yml'
-
-permissions:
-  contents: write
+      - "rules/**"          # Triggered when rules are added/changed
+      - "logs/json/**"      # Triggered when new JSON logs are committed
+  pull_request:
+    paths:
+      - "rules/**"
+      - "logs/json/**"
+  workflow_dispatch:        # Manual trigger
+    inputs:
+      log_type:
+        description: "Log type to test (leave blank for all)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - windows
+          - linux
+          - network
+          - cloud
+          - apache
 
 jobs:
   test-sigma-rules:
+    name: Test Sigma Rules Against Log Samples
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write       # To commit the test report back
+      pull-requests: write  # To post PR comments with results
+
     steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0    # Full history so we can diff changed files
 
+      # ── 2. Set up Python ─────────────────────────────────────────────────
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.12"
 
+      # ── 3. Install dependencies ──────────────────────────────────────────
       - name: Install dependencies
         run: |
-          pip install sigma-cli pySigma-backend-splunk pySigma-pipeline-windows pyyaml
+          python -m pip install --upgrade pip
+          pip install pyyaml
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Get changed rule files
+      # ── 4. Detect which rule files changed (push and PR only) ─────────────
+      # On a push:  diff against the previous commit
+      # On a PR:    diff against the base branch
+      # On manual:  skip — test by type instead
+      - name: Detect changed rule files
         id: changed
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         run: |
-          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'rules/**.yml' | tr '\n' ' ')
-          echo "files=$CHANGED" >> $GITHUB_OUTPUT
-          echo "Changed rules: $CHANGED"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+              | grep '^rules/.*\.yml$' \
+              | tr '\n' ' ')
+          else
+            # Pull request — diff against base branch
+            git fetch origin ${{ github.base_ref }} --depth=1
+            CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
+              | grep '^rules/.*\.yml$' \
+              | tr '\n' ' ')
+          fi
 
-      - name: Run Sigma tests
-        run: |
-          python scripts/test_rules.py "${{ steps.changed.outputs.files }}"
+          echo "files=${CHANGED}" >> $GITHUB_OUTPUT
 
-      - name: Commit reports
+          if [ -z "$CHANGED" ]; then
+            echo "No rule files changed."
+          else
+            echo "Changed rule files: ${CHANGED}"
+          fi
+
+      # ── 5a. Test only changed rule files (push / PR) ──────────────────────
+      - name: Test changed rules
+        id: sigma_test
+        if: (github.event_name == 'push' || github.event_name == 'pull_request') && steps.changed.outputs.files != ''
         run: |
-          git config user.name "sigma-pipeline[bot]"
-          git config user.email "sigma-pipeline@users.noreply.github.com"
-          git add reports/passed/ reports/failed/
-          git diff --staged --quiet || git commit -m "ci: sigma test reports for push ${{ github.sha }}"
-          git push
+          mkdir -p results
+          FILES="${{ steps.changed.outputs.files }}"
+          echo "Testing changed rule file(s): $FILES"
+          python scripts/test_sigma_rules.py \
+            --rule-files $FILES \
+            --report-file results/test_report.md
+        continue-on-error: true
+
+      # ── 5b. Skip message if no rule files changed (e.g. only logs changed) ─
+      - name: No rule changes detected
+        if: (github.event_name == 'push' || github.event_name == 'pull_request') && steps.changed.outputs.files == ''
+        run: |
+          mkdir -p results
+          echo "# Sigma Rule Test Report" > results/test_report.md
+          echo "" >> results/test_report.md
+          echo "No rule files were changed in this push — skipping rule tests." >> results/test_report.md
+          echo "No rule files changed in this push — skipping rule tests."
+
+      # ── 5c. Manual trigger — test by type or all ─────────────────────────
+      - name: Test rules (manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          TYPE="${{ github.event.inputs.log_type }}"
+          mkdir -p results
+          if [ -z "$TYPE" ]; then
+            echo "Testing all log types..."
+            python scripts/test_sigma_rules.py --report-file results/test_report.md
+          else
+            echo "Testing log type: $TYPE"
+            python scripts/test_sigma_rules.py --type "$TYPE" --report-file results/test_report.md
+          fi
+        continue-on-error: true
+
+      # ── 6. Upload test report as artifact ────────────────────────────────
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sigma-test-report
+          path: results/test_report.md
+          retention-days: 30
+
+      # ── 7. Post report to GitHub Actions summary ──────────────────────────
+      - name: Post summary
+        if: always()
+        run: |
+          if [ -f results/test_report.md ]; then
+            cat results/test_report.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # ── 8. Post PR comment with results ───────────────────────────────────
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('results/test_report.md')) return;
+
+            const report = fs.readFileSync('results/test_report.md', 'utf8');
+            const body = `## 🔍 Sigma Rule Test Results\n\n${report}`;
+
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.data.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.startsWith('## 🔍 Sigma Rule Test Results')
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      # ── 9. Commit report back to repo (push to main only) ─────────────────
+      - name: Commit test report
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add results/test_report.md
+
+          if git diff --cached --quiet; then
+            echo "No report changes to commit."
+          else
+            git commit -m "chore(results): update sigma test report [skip ci]"
+            git push
+          fi
+
+      # ── 10. Enforce strict pass/fail ──────────────────────────────────────
+      - name: Enforce pipeline result
+        if: steps.sigma_test.outcome == 'failure'
+        run: exit 1
