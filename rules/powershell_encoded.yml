@@ -1,7 +1,7 @@
 title: Suspicious PowerShell Execution with Encoded Command
 id: d7bcd677-645d-4691-a8d4-7a5602b780d1
 status: test
-description: Detects PowerShell execution with base64 encoded command
+description: Detects PowerShell execution with base64
     - https://attack.mitre.org/techniques/T1059/001/
 author: Test User
 date: 2024-01-15
@@ -27,4 +27,5 @@ detection:
 falsepositives:
     - Legitimate administrative scripts
     - Software deployment tools
+
 level: medium
