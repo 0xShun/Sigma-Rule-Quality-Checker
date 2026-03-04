@@ -1,0 +1,104 @@
+name: Convert Raw Logs to JSON
+
+on:
+  push:
+    paths:
+      - "logs/raw/**"          # Only runs when raw logs are added/changed
+  workflow_dispatch:            # Allow manual trigger from the Actions tab
+    inputs:
+      log_type:
+        description: "Log type to convert (leave blank for all)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - windows
+          - linux
+          - network
+          - cloud
+
+jobs:
+  convert-logs:
+    name: Convert Logs → JSON
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write          # Needed to commit the JSON output back to the repo
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # Full history so we can detect changed files
+
+      # ── 2. Set up Python ─────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # ── 3. Install dependencies ──────────────────────────────────────────
+      # The conversion script uses only stdlib, but this step is here for
+      # future parsers that may need third-party packages.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # ── 4. Detect which log types changed (on push) ──────────────────────
+      - name: Detect changed log types
+        id: changed
+        if: github.event_name == 'push'
+        run: |
+          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+            | grep '^logs/raw/' \
+            | awk -F'/' '{print $3}' \
+            | sort -u \
+            | tr '\n' ' ')
+          echo "types=${CHANGED}" >> $GITHUB_OUTPUT
+          echo "Changed log types: ${CHANGED}"
+
+      # ── 5a. Convert — triggered by push (only changed types) ─────────────
+      - name: Convert changed log types
+        if: github.event_name == 'push'
+        run: |
+          TYPES="${{ steps.changed.outputs.types }}"
+          if [ -z "$TYPES" ]; then
+            echo "No raw log changes detected, skipping conversion."
+            exit 0
+          fi
+          for TYPE in $TYPES; do
+            echo "::group::Converting type: $TYPE"
+            python scripts/convert_logs.py --type "$TYPE"
+            echo "::endgroup::"
+          done
+
+      # ── 5b. Convert — triggered manually ─────────────────────────────────
+      - name: Convert logs (manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          TYPE="${{ github.event.inputs.log_type }}"
+          if [ -z "$TYPE" ]; then
+            echo "Converting all log types..."
+            python scripts/convert_logs.py
+          else
+            echo "Converting log type: $TYPE"
+            python scripts/convert_logs.py --type "$TYPE"
+          fi
+
+      # ── 6. Commit & push generated JSON ──────────────────────────────────
+      - name: Commit JSON output
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add logs/json/
+
+          if git diff --cached --quiet; then
+            echo "No JSON changes to commit."
+          else
+            git commit -m "chore(logs): auto-convert raw logs to JSON [skip ci]"
+            git push
+          fi
