@@ -228,7 +228,7 @@ def parse_cloud_json(content: str, filepath: Path) -> list[dict]:
     content = content.strip()
     lines = content.splitlines()
     if len(lines) > 1:
-        all_json = all(True for l in lines if _is_json(l))
+        all_json = all(_is_json(l) for l in lines if l.strip())
         if all_json:
             for line in lines:
                 obj = json.loads(line)

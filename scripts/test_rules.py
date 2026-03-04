@@ -1,490 +1,524 @@
 #!/usr/bin/env python3
 """
-Sigma Rule Tester
------------------
-Tests pushed Sigma rules through three stages:
-  1. Syntax validation   — required fields, YAML structure
-  2. Log matching        — pattern match against /logs/ JSON samples
-  3. Noise heuristics    — detect overly broad conditions
+test_sigma_rules.py
 
-Writes a detailed report to /reports/passed/ or /reports/failed/
+Tests Sigma rules against JSON log samples.
+Each rule in rules/<type>/ is evaluated against all JSON logs in logs/json/<type>/.
+
+Exit codes:
+    0  — All rules matched at least one log record (all tests passed)
+    1  — One or more rules matched nothing (strict mode: pipeline fails)
+    2  — One or more rules had parsing/evaluation errors
+
+Usage:
+    python3 scripts/test_sigma_rules.py
+    python3 scripts/test_sigma_rules.py --type windows
+    python3 scripts/test_sigma_rules.py --report-file results/test_report.md
 """
 
-import sys
-import os
+import argparse
 import json
-import yaml
-import re
-import datetime
+import logging
+import sys
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
+
+import yaml
+
+# ── Logging setup ─────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+log = logging.getLogger(__name__)
+
+# ── Paths ─────────────────────────────────────────────────────────────────────
+REPO_ROOT    = Path(__file__).resolve().parent.parent
+RULES_ROOT   = REPO_ROOT / "rules"
+JSON_ROOT    = REPO_ROOT / "logs" / "json"
+RESULTS_ROOT = REPO_ROOT / "results"
+
+LOG_TYPES = ["windows", "linux", "network", "cloud", "apache"]
 
 
-# ── Constants ─────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# Data classes
+# ─────────────────────────────────────────────────────────────────────────────
 
-REPO_ROOT    = Path(__file__).parent.parent
-LOGS_DIR     = REPO_ROOT / "logs"
-REPORTS_PASS = REPO_ROOT / "reports" / "passed"
-REPORTS_FAIL = REPO_ROOT / "reports" / "failed"
-
-REQUIRED_FIELDS = ["title", "status", "logsource", "detection"]
-VALID_STATUSES  = ["stable", "test", "experimental", "deprecated", "unsupported"]
-
-# Maps Sigma logsource (product, category) → log subfolder/filename
-LOG_MAP = {
-    ("windows", "process_creation"):   "windows/process_creation.json",
-    ("windows", "network_connection"): "windows/network_connection.json",
-    ("windows", "dns_query"):          "windows/network_connection.json",
-    ("linux",   "process_creation"):   "linux/auditd.json",
-    ("linux",   None):                 "linux/auditd.json",
-    (None,      "dns"):                "network/dns_queries.json",
-    ("network", None):                 "network/dns_queries.json",
-    (None,      "proxy"):              "network/proxy_traffic.json",
-}
-
-# Noise heuristic patterns — conditions that are too broad
-NOISE_PATTERNS = [
-    (r"Image\|endswith:\s*['\"]\\\\[a-z]+\.exe['\"]$",
-     "Image match with no ParentImage or CommandLine filter — too broad"),
-    (r"CommandLine\|contains:\s*['\"][a-z]{1,3}['\"]",
-     "Very short CommandLine contains match — high false positive risk"),
-    (r"\*\.\*",
-     "Wildcard *.* in condition — extremely broad"),
-    (r"condition:\s*selection$",
-     "Single 'selection' condition with no additional filters — check specificity"),
-    (r"User\|contains:\s*['\"]admin['\"]",
-     "Broad User filter on 'admin' — matches many legitimate admin accounts"),
-]
+@dataclass
+class RuleResult:
+    rule_file:    Path
+    rule_title:   str
+    rule_id:      str
+    rule_level:   str
+    log_type:     str
+    status:       str          # "pass" | "no_match" | "error"
+    matched_logs: list[str] = field(default_factory=list)   # log filenames that hit
+    match_count:  int = 0
+    error_msg:    str = ""
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# Sigma condition evaluator
+# ─────────────────────────────────────────────────────────────────────────────
 
-def load_yaml(path: Path):
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-
-def load_logs(log_file: Path):
-    if not log_file.exists():
-        return None
-    with open(log_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return data if isinstance(data, list) else [data]
-
-
-def resolve_log_file(logsource: dict) -> Path | None:
-    product  = logsource.get("product")
-    category = logsource.get("category")
-    service  = logsource.get("service")
-
-    for (p, c), path in LOG_MAP.items():
-        if (p is None or p == product) and (c is None or c == category or c == service):
-            return LOGS_DIR / path
-    return None
-
-
-# ── Stage 1 — Syntax Validation ───────────────────────────────────────────────
-
-def validate_syntax(rule_path: Path, rule: dict) -> tuple[bool, list[str]]:
-    errors = []
-
-    # Required fields
-    for field in REQUIRED_FIELDS:
-        if field not in rule:
-            errors.append(f"Missing required field: '{field}'")
-
-    # Status check
-    status = rule.get("status", "")
-    if status not in VALID_STATUSES:
-        errors.append(f"Invalid status '{status}'. Must be one of: {', '.join(VALID_STATUSES)}")
-
-    # Detection block checks
-    detection = rule.get("detection", {})
-    if isinstance(detection, dict):
-        if "condition" not in detection:
-            errors.append("Missing 'condition' inside detection block")
-        if len(detection) < 2:
-            errors.append("Detection block has no selection — only condition found")
-    else:
-        errors.append("Detection block is malformed — must be a YAML mapping")
-
-    # Logsource check
-    logsource = rule.get("logsource", {})
-    if not isinstance(logsource, dict) or not logsource:
-        errors.append("Logsource block is missing or empty")
-    elif "product" not in logsource and "category" not in logsource and "service" not in logsource:
-        errors.append("Logsource must have at least one of: product, category, service")
-
-    # Title check
-    title = rule.get("title", "")
-    if not title or len(title.strip()) < 5:
-        errors.append("Title is missing or too short (minimum 5 characters)")
-
-    # Tab character check
-    raw = rule_path.read_text(encoding="utf-8")
-    if "\t" in raw:
-        errors.append("Tab characters found in YAML — use spaces only")
-
-    return len(errors) == 0, errors
-
-
-# ── Stage 2 — Log Matching ────────────────────────────────────────────────────
-
-def match_logs(rule: dict, logs: list[dict]) -> tuple[bool, int, list[str]]:
+class SigmaEvaluator:
     """
-    Pattern matches detection selections against log entries.
-    Returns: (any_match, match_count, match_descriptions)
+    Pure-Python Sigma rule evaluator.
+
+    Supports:
+      - Field value matching: string, int, list (OR semantics)
+      - Modifiers: |contains, |endswith, |startswith, |re, |cidr (basic)
+      - Nested field access via dot notation: event_data.CommandLine
+      - Detection condition: AND / OR / NOT / grouped identifiers
+      - Wildcards: * in string values
     """
-    detection  = rule.get("detection", {})
-    condition  = detection.get("condition", "")
-    selections = {k: v for k, v in detection.items() if k != "condition"}
 
-    if not selections or not logs:
-        return False, 0, []
+    def __init__(self, rule: dict):
+        self.rule = rule
+        self.detection = rule.get("detection", {})
 
-    matches     = []
-    match_count = 0
+    # ── Public entry point ────────────────────────────────────────────────
 
-    for log_entry in logs:
-        entry_matched = _evaluate_condition(condition, selections, log_entry)
-        if entry_matched:
-            match_count += 1
-            desc = _describe_match(log_entry)
-            if desc not in matches:
-                matches.append(desc)
-
-    return match_count > 0, match_count, matches[:5]  # cap at 5 examples
-
-
-def _evaluate_condition(condition: str, selections: dict, log_entry: dict) -> bool:
-    """Evaluate a simple Sigma condition against a single log entry."""
-    # Build a map of selection_name → did_it_match
-    sel_results = {}
-    for sel_name, sel_criteria in selections.items():
-        sel_results[sel_name] = _match_selection(sel_criteria, log_entry)
-
-    # Parse condition: supports 'selection', 'sel1 and sel2', 'sel1 or sel2', 'not sel1'
-    cond = condition.strip().lower()
-
-    # Replace selection names with their bool results
-    for name, result in sel_results.items():
-        cond = cond.replace(name.lower(), str(result).lower())
-
-    try:
-        # Safe eval of simple boolean expression
-        cond = cond.replace("true", "True").replace("false", "False")
-        return bool(eval(cond))  # noqa: S307
-    except Exception:
-        # Fallback: if any selection matched, consider it a match
-        return any(sel_results.values())
-
-
-def _match_selection(criteria, log_entry: dict) -> bool:
-    """Match a selection block (dict or list of dicts) against a log entry."""
-    if isinstance(criteria, list):
-        # List of criteria — any match (OR)
-        return any(_match_selection(c, log_entry) for c in criteria)
-
-    if not isinstance(criteria, dict):
-        return False
-
-    # All criteria in the dict must match (AND)
-    for field_expr, expected in criteria.items():
-        if not _match_field(field_expr, expected, log_entry):
+    def matches(self, record: dict) -> bool:
+        """Return True if the record matches the rule's detection logic."""
+        condition_str = self.detection.get("condition", "")
+        if not condition_str:
             return False
-    return True
+        return self._eval_condition(condition_str, record)
 
+    # ── Condition parser ─────────────────────────────────────────────────
 
-def _match_field(field_expr: str, expected, log_entry: dict) -> bool:
-    """
-    Evaluate a single Sigma field modifier expression.
-    Supports: contains, endswith, startswith, re, exact match.
-    """
-    parts    = field_expr.split("|")
-    field    = parts[0]
-    modifier = parts[1].lower() if len(parts) > 1 else "exact"
+    def _eval_condition(self, condition: str, record: dict) -> bool:
+        """
+        Evaluate a Sigma condition string against a record.
+        Handles: identifier, not X, X and Y, X or Y, (X), 1 of X*, all of X*
+        """
+        condition = condition.strip()
 
-    # Get field value from log — case-insensitive key lookup
-    log_val = None
-    for k, v in log_entry.items():
-        if k.lower() == field.lower():
-            log_val = str(v)
-            break
+        # Handle parentheses
+        if condition.startswith("(") and condition.endswith(")"):
+            return self._eval_condition(condition[1:-1], record)
 
-    if log_val is None:
+        # 'not' prefix
+        if condition.lower().startswith("not "):
+            return not self._eval_condition(condition[4:].strip(), record)
+
+        # Split on ' and ' / ' or ' (case-insensitive, left-to-right)
+        # We do a simple left-split respecting parentheses depth
+        for op in (" and ", " or "):
+            idx = self._find_operator(condition, op)
+            if idx != -1:
+                left  = condition[:idx].strip()
+                right = condition[idx + len(op):].strip()
+                if op.strip() == "and":
+                    return self._eval_condition(left, record) and self._eval_condition(right, record)
+                else:
+                    return self._eval_condition(left, record) or self._eval_condition(right, record)
+
+        # '1 of <selection>*' / 'all of <selection>*'
+        lower = condition.lower()
+        if lower.startswith("1 of "):
+            pattern = condition[5:].rstrip("*")
+            return any(
+                self._eval_selection(k, record)
+                for k in self.detection
+                if k != "condition" and k.startswith(pattern)
+            )
+        if lower.startswith("all of "):
+            pattern = condition[7:].rstrip("*")
+            return all(
+                self._eval_selection(k, record)
+                for k in self.detection
+                if k != "condition" and k.startswith(pattern)
+            )
+
+        # Plain identifier
+        return self._eval_selection(condition, record)
+
+    def _find_operator(self, s: str, op: str) -> int:
+        """Find the first occurrence of op outside parentheses (case-insensitive)."""
+        depth = 0
+        s_lower = s.lower()
+        op_lower = op.lower()
+        i = 0
+        while i < len(s):
+            if s[i] == "(":
+                depth += 1
+            elif s[i] == ")":
+                depth -= 1
+            elif depth == 0 and s_lower[i:i+len(op)] == op_lower:
+                return i
+            i += 1
+        return -1
+
+    # ── Selection evaluator ───────────────────────────────────────────────
+
+    def _eval_selection(self, name: str, record: dict) -> bool:
+        """Evaluate a named detection selection block against a record."""
+        block = self.detection.get(name)
+        if block is None:
+            log.warning("Unknown detection identifier: %r", name)
+            return False
+
+        if isinstance(block, dict):
+            return self._eval_map(block, record)
+        if isinstance(block, list):
+            # List of maps — any map can match (OR)
+            return any(self._eval_map(item, record) for item in block if isinstance(item, dict))
         return False
 
-    candidates = expected if isinstance(expected, list) else [expected]
+    def _eval_map(self, mapping: dict, record: dict) -> bool:
+        """All keys in a mapping must match (AND semantics within a selection)."""
+        for field_expr, expected in mapping.items():
+            if not self._eval_field(field_expr, expected, record):
+                return False
+        return True
 
-    for candidate in candidates:
-        candidate = str(candidate)
+    # ── Field / modifier matching ─────────────────────────────────────────
+
+    def _eval_field(self, field_expr: str, expected: Any, record: dict) -> bool:
+        """
+        Evaluate a single field expression (with optional |modifier) against the record.
+        """
+        parts    = field_expr.split("|")
+        field    = parts[0]
+        modifier = parts[1].lower() if len(parts) > 1 else None
+
+        actual = self._get_field(field, record)
+
+        # Normalize to list for uniform handling
+        actuals = actual if isinstance(actual, list) else [actual]
+
+        # expected can be a scalar or a list (OR semantics)
+        expecteds = expected if isinstance(expected, list) else [expected]
+
+        return any(
+            self._match_value(a, e, modifier)
+            for a in actuals
+            for e in expecteds
+            if a is not None
+        )
+
+    def _get_field(self, field: str, record: dict) -> Any:
+        """Retrieve a field value using dot notation for nested dicts."""
+        parts = field.split(".")
+        val: Any = record
+        for part in parts:
+            if isinstance(val, dict):
+                val = val.get(part)
+            else:
+                return None
+        return val
+
+    def _match_value(self, actual: Any, expected: Any, modifier: str | None) -> bool:
+        """Apply the modifier logic to compare actual vs expected."""
+        if actual is None:
+            return False
+
+        actual_str   = str(actual).lower()
+        expected_str = str(expected).lower()
+
+        if modifier is None:
+            # Exact match with wildcard support
+            return self._wildcard_match(actual_str, expected_str)
+
         if modifier == "contains":
-            if candidate.lower() in log_val.lower():
-                return True
-        elif modifier == "endswith":
-            if log_val.lower().endswith(candidate.lower()):
-                return True
-        elif modifier == "startswith":
-            if log_val.lower().startswith(candidate.lower()):
-                return True
-        elif modifier == "re":
-            if re.search(candidate, log_val, re.IGNORECASE):
-                return True
-        else:  # exact or wildcard
-            pattern = re.escape(candidate).replace(r"\*", ".*").replace(r"\?", ".")
-            if re.fullmatch(pattern, log_val, re.IGNORECASE):
-                return True
+            return expected_str in actual_str
 
-    return False
+        if modifier == "endswith":
+            return actual_str.endswith(expected_str)
 
+        if modifier == "startswith":
+            return actual_str.startswith(expected_str)
 
-def _describe_match(log_entry: dict) -> str:
-    keys = ["Image", "CommandLine", "EventID", "DestinationIp",
-            "DestinationHostname", "QueryName", "User", "process_name"]
-    parts = []
-    for k in keys:
-        for lk, lv in log_entry.items():
-            if lk.lower() == k.lower() and lv:
-                parts.append(f"{k}={lv}")
-                break
-    return " | ".join(parts) if parts else str(log_entry)[:120]
+        if modifier == "re":
+            import re
+            try:
+                return bool(re.search(expected_str, actual_str, re.IGNORECASE))
+            except re.error:
+                return False
 
+        if modifier == "cidr":
+            import ipaddress
+            try:
+                return ipaddress.ip_address(str(actual)) in ipaddress.ip_network(str(expected), strict=False)
+            except ValueError:
+                return False
 
-# ── Stage 3 — Noise Heuristics ────────────────────────────────────────────────
+        if modifier in ("gt", "gte", "lt", "lte"):
+            try:
+                a, e = float(actual), float(expected)
+                return {"gt": a > e, "gte": a >= e, "lt": a < e, "lte": a <= e}[modifier]
+            except (ValueError, TypeError):
+                return False
 
-def check_noise(rule_path: Path) -> tuple[str, list[str]]:
-    """
-    Heuristic noise check on raw rule text.
-    Returns: (noise_level, list_of_warnings)
-    """
-    raw      = rule_path.read_text(encoding="utf-8")
-    warnings = []
+        # Unknown modifier — fall back to exact
+        log.debug("Unknown modifier %r, falling back to exact match", modifier)
+        return self._wildcard_match(actual_str, expected_str)
 
-    for pattern, message in NOISE_PATTERNS:
-        if re.search(pattern, raw, re.IGNORECASE | re.MULTILINE):
-            warnings.append(message)
-
-    # Additional: check if there's a filter/exclude section (good practice)
-    detection = yaml.safe_load(raw).get("detection", {})
-    has_filter = any("filter" in k.lower() for k in detection.keys())
-    if not has_filter and len(detection) <= 2:
-        warnings.append("No filter/exclusion block found — consider adding one to reduce false positives")
-
-    if len(warnings) == 0:
-        level = "Low"
-    elif len(warnings) <= 2:
-        level = "Medium"
-    else:
-        level = "High"
-
-    return level, warnings
+    @staticmethod
+    def _wildcard_match(actual: str, pattern: str) -> bool:
+        """Simple glob-style wildcard matching (* only)."""
+        import fnmatch
+        return fnmatch.fnmatch(actual, pattern)
 
 
-# ── Report Writer ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# Rule loader
+# ─────────────────────────────────────────────────────────────────────────────
 
-def write_report(rule_path: Path, rule: dict, passed: bool, results: dict):
-    REPORTS_PASS.mkdir(parents=True, exist_ok=True)
-    REPORTS_FAIL.mkdir(parents=True, exist_ok=True)
+def load_rule(path: Path) -> dict | None:
+    """Load and minimally validate a Sigma YAML rule file."""
+    try:
+        with path.open(encoding="utf-8") as fh:
+            rule = yaml.safe_load(fh)
+        if not isinstance(rule, dict):
+            raise ValueError("Rule file is not a YAML mapping")
+        if "detection" not in rule:
+            raise ValueError("Missing required 'detection' key")
+        if "condition" not in rule.get("detection", {}):
+            raise ValueError("Missing 'condition' inside detection")
+        return rule
+    except Exception as exc:
+        log.error("Failed to load rule %s: %s", path, exc)
+        return None
 
-    folder   = REPORTS_PASS if passed else REPORTS_FAIL
-    stem     = rule_path.stem
-    ts       = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    out_path = folder / f"{stem}__{ts}.md"
 
-    status_icon = "✅ PASSED" if passed else "❌ FAILED"
-    now         = datetime.datetime.utcnow().isoformat() + "Z"
+def load_json_logs(json_dir: Path) -> dict[str, list[dict]]:
+    """Load all JSON log files from a directory. Returns {filename: [records]}."""
+    result: dict[str, list[dict]] = {}
+    if not json_dir.exists():
+        return result
+    for jf in sorted(json_dir.rglob("*.json")):
+        try:
+            records = json.loads(jf.read_text(encoding="utf-8"))
+            if isinstance(records, dict):
+                records = [records]
+            result[jf.name] = records
+        except Exception as exc:
+            log.warning("Could not load log file %s: %s", jf, exc)
+    return result
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test runner
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_rule(rule_path: Path, log_type: str) -> RuleResult:
+    """Run a single Sigma rule against all JSON logs for its type."""
+    rule = load_rule(rule_path)
+
+    result = RuleResult(
+        rule_file  = rule_path,
+        rule_title = rule.get("title", "Unknown") if rule else "Unknown",
+        rule_id    = rule.get("id", "no-id") if rule else "no-id",
+        rule_level = rule.get("level", "unknown") if rule else "unknown",
+        log_type   = log_type,
+        status     = "error" if not rule else "no_match",
+    )
+
+    if not rule:
+        result.error_msg = "Failed to parse rule file"
+        return result
+
+    json_dir = JSON_ROOT / log_type
+    log_files = load_json_logs(json_dir)
+
+    if not log_files:
+        result.status    = "error"
+        result.error_msg = f"No JSON log files found in {json_dir}"
+        return result
+
+    evaluator = SigmaEvaluator(rule)
+
+    for filename, records in log_files.items():
+        for record in records:
+            try:
+                if evaluator.matches(record):
+                    result.match_count += 1
+                    if filename not in result.matched_logs:
+                        result.matched_logs.append(filename)
+            except Exception as exc:
+                result.status    = "error"
+                result.error_msg = f"Error evaluating record in {filename}: {exc}"
+                log.debug("Evaluation error on record %s: %s", record, exc)
+                return result
+
+    result.status = "pass" if result.match_count > 0 else "no_match"
+    return result
+
+
+def run_tests(log_types: list[str]) -> list[RuleResult]:
+    """Run all rules for the given log types and return results."""
+    all_results: list[RuleResult] = []
+
+    for log_type in log_types:
+        rules_dir = RULES_ROOT / log_type
+        if not rules_dir.exists():
+            log.warning("Rules directory not found, skipping: %s", rules_dir)
+            continue
+
+        rule_files = sorted(rules_dir.rglob("*.yml"))
+        if not rule_files:
+            log.info("[%s] No rule files found.", log_type)
+            continue
+
+        log.info("[%s] Testing %d rule(s)...", log_type, len(rule_files))
+
+        for rule_path in rule_files:
+            log.info("  Rule: %s", rule_path.name)
+            result = test_rule(rule_path, log_type)
+
+            icon = {"pass": "✓", "no_match": "✗", "error": "⚠"}.get(result.status, "?")
+            if result.status == "pass":
+                log.info("    %s PASS — %d match(es) in: %s",
+                         icon, result.match_count, ", ".join(result.matched_logs))
+            elif result.status == "no_match":
+                log.warning("    %s NO MATCH — rule fired against nothing (FAIL)", icon)
+            else:
+                log.error("    %s ERROR — %s", icon, result.error_msg)
+
+            all_results.append(result)
+
+    return all_results
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Report generator
+# ─────────────────────────────────────────────────────────────────────────────
+
+def generate_markdown_report(results: list[RuleResult]) -> str:
+    """Generate a Markdown test report from the results list."""
+    now   = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    total = len(results)
+    passed    = sum(1 for r in results if r.status == "pass")
+    no_match  = sum(1 for r in results if r.status == "no_match")
+    errors    = sum(1 for r in results if r.status == "error")
+
+    overall = "✅ PASSED" if (no_match == 0 and errors == 0) else "❌ FAILED"
 
     lines = [
-        f"# Sigma Rule Test Report — {status_icon}",
+        f"# Sigma Rule Test Report",
         f"",
-        f"| Field | Value |",
-        f"|---|---|",
-        f"| **Rule file** | `{rule_path.name}` |",
-        f"| **Rule title** | {rule.get('title', 'N/A')} |",
-        f"| **Status** | {rule.get('status', 'N/A')} |",
-        f"| **Tested at** | {now} |",
-        f"| **Overall result** | {status_icon} |",
+        f"**Generated:** {now}  ",
+        f"**Overall:** {overall}  ",
         f"",
-    ]
-
-    # ── Stage 1
-    syntax_pass   = results["syntax"]["passed"]
-    syntax_errors = results["syntax"]["errors"]
-    lines += [
+        f"| Metric | Count |",
+        f"|--------|-------|",
+        f"| Total rules tested | {total} |",
+        f"| ✅ Passed (matched logs) | {passed} |",
+        f"| ❌ No match (strict fail) | {no_match} |",
+        f"| ⚠️ Errors | {errors} |",
+        f"",
         f"---",
-        f"## Stage 1 — Syntax Validation {'✅' if syntax_pass else '❌'}",
         f"",
-        f"**Result:** {'PASSED' if syntax_pass else 'FAILED'}",
-        f"",
-    ]
-    if syntax_errors:
-        lines.append("**Errors found:**")
-        for e in syntax_errors:
-            lines.append(f"- {e}")
-    else:
-        lines.append("No syntax errors found.")
-    lines.append("")
-
-    # ── Stage 2
-    log_result  = results["log_match"]
-    lines += [
-        f"---",
-        f"## Stage 2 — Log Matching {'✅' if log_result['matched'] else '⚠️'}",
-        f"",
-        f"**Log file used:** `{log_result['log_file']}`",
-        f"**Matches found:** {log_result['match_count']}",
-        f"",
-    ]
-    if log_result["log_file"] == "NOT FOUND":
-        lines.append("> ⚠️ No matching log file found in `/logs/` for this rule's logsource.")
-        lines.append("> Add a sample log file to enable log matching.")
-    elif log_result["matched"]:
-        lines.append("**Matching log entries (up to 5):**")
-        for m in log_result["matches"]:
-            lines.append(f"- `{m}`")
-    else:
-        lines.append("> Rule did not match any entries in the sample log file.")
-        lines.append("> This may indicate the detection logic needs tuning, or the log sample needs updating.")
-    lines.append("")
-
-    # ── Stage 3
-    noise_level    = results["noise"]["level"]
-    noise_warnings = results["noise"]["warnings"]
-    noise_icon     = {"Low": "✅", "Medium": "⚠️", "High": "❌"}.get(noise_level, "⚠️")
-    lines += [
-        f"---",
-        f"## Stage 3 — Noise Assessment {noise_icon}",
-        f"",
-        f"**Noise level:** {noise_level}",
-        f"",
-    ]
-    if noise_warnings:
-        lines.append("**Warnings:**")
-        for w in noise_warnings:
-            lines.append(f"- {w}")
-    else:
-        lines.append("No noise issues detected.")
-    lines.append("")
-
-    # ── Summary
-    lines += [
-        f"---",
-        f"## Summary",
-        f"",
-        f"| Test | Result |",
-        f"|---|---|",
-        f"| Syntax validation | {'✅ Pass' if syntax_pass else '❌ Fail'} |",
-        f"| Log matching | {'✅ Matched' if log_result['matched'] else '⚠️ No match'} |",
-        f"| Noise level | {noise_icon} {noise_level} |",
+        f"## Results by Rule",
         f"",
     ]
 
-    if not passed:
+    # Group by log type
+    by_type: dict[str, list[RuleResult]] = {}
+    for r in results:
+        by_type.setdefault(r.log_type, []).append(r)
+
+    for log_type, type_results in sorted(by_type.items()):
+        lines.append(f"### {log_type.capitalize()}")
+        lines.append("")
+        lines.append("| Status | Rule | Level | ID | Matched Logs |")
+        lines.append("|--------|------|-------|----|--------------|")
+
+        for r in type_results:
+            icon = {"pass": "✅", "no_match": "❌", "error": "⚠️"}.get(r.status, "?")
+            matched = ", ".join(r.matched_logs) if r.matched_logs else (r.error_msg or "—")
+            lines.append(
+                f"| {icon} | {r.rule_title} | {r.rule_level} | `{r.rule_id}` | {matched} |"
+            )
+
+        lines.append("")
+
+    # Failures section
+    failures = [r for r in results if r.status in ("no_match", "error")]
+    if failures:
         lines += [
-            f"---",
-            f"## What to Fix",
-            f"",
+            "---",
+            "",
+            "## ❌ Failures Detail",
+            "",
         ]
-        if syntax_errors:
-            lines.append("### Syntax errors to resolve:")
-            for e in syntax_errors:
-                lines.append(f"1. {e}")
+        for r in failures:
+            lines += [
+                f"### `{r.rule_file.name}` — {r.rule_title}",
+                f"- **Type:** {r.log_type}",
+                f"- **Status:** {r.status}",
+                f"- **ID:** `{r.rule_id}`",
+            ]
+            if r.status == "no_match":
+                lines.append(
+                    "- **Reason:** Rule matched zero records across all log samples. "
+                    "Add a log sample that exercises this rule, or fix the detection logic."
+                )
+            elif r.status == "error":
+                lines.append(f"- **Error:** {r.error_msg}")
             lines.append("")
-        if not log_result["matched"] and log_result["log_file"] != "NOT FOUND":
-            lines.append("### Log matching:")
-            lines.append("- Review your detection conditions against the sample log fields")
-            lines.append("- Ensure field names match exactly (case-sensitive in some backends)")
-            lines.append("")
-        if noise_warnings:
-            lines.append("### Noise reduction:")
-            for w in noise_warnings:
-                lines.append(f"- {w}")
-            lines.append("")
 
-    out_path.write_text("\n".join(lines), encoding="utf-8")
-    print(f"  Report written → {out_path.relative_to(REPO_ROOT)}")
-    return out_path
+    return "\n".join(lines)
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
-
-def test_rule(rule_path: Path) -> bool:
-    print(f"\n{'='*60}")
-    print(f"Testing: {rule_path.name}")
-    print(f"{'='*60}")
-
-    # Load rule
-    try:
-        rule = load_yaml(rule_path)
-    except yaml.YAMLError as e:
-        print(f"  ✗ YAML parse error: {e}")
-        write_report(rule_path, {}, False, {
-            "syntax":    {"passed": False, "errors": [f"YAML parse error: {e}"]},
-            "log_match": {"matched": False, "match_count": 0, "matches": [], "log_file": "N/A"},
-            "noise":     {"level": "Unknown", "warnings": []},
-        })
-        return False
-
-    # Stage 1 — Syntax
-    print("  Stage 1: Syntax validation...")
-    syntax_pass, syntax_errors = validate_syntax(rule_path, rule)
-    print(f"    {'✅ Pass' if syntax_pass else '❌ Fail'} — {len(syntax_errors)} error(s)")
-
-    # Stage 2 — Log matching
-    print("  Stage 2: Log matching...")
-    logsource = rule.get("logsource", {})
-    log_file  = resolve_log_file(logsource)
-    logs      = load_logs(log_file) if log_file else None
-
-    if log_file is None or logs is None:
-        log_file_str = "NOT FOUND"
-        matched, match_count, match_descs = False, 0, []
-        print(f"    ⚠️  No log file found for logsource: {logsource}")
-    else:
-        log_file_str = str(log_file.relative_to(REPO_ROOT))
-        matched, match_count, match_descs = match_logs(rule, logs)
-        print(f"    {'✅' if matched else '⚠️ '} {match_count} match(es) in {log_file_str}")
-
-    # Stage 3 — Noise
-    print("  Stage 3: Noise heuristics...")
-    noise_level, noise_warnings = check_noise(rule_path)
-    print(f"    Noise level: {noise_level} ({len(noise_warnings)} warning(s))")
-
-    # Determine overall pass/fail
-    # Rule PASSES if: syntax is valid + at least some log match (or no log file) + noise not High
-    overall_pass = syntax_pass and (matched or log_file_str == "NOT FOUND") and noise_level != "High"
-
-    results = {
-        "syntax":    {"passed": syntax_pass, "errors": syntax_errors},
-        "log_match": {"matched": matched, "match_count": match_count,
-                      "matches": match_descs, "log_file": log_file_str},
-        "noise":     {"level": noise_level, "warnings": noise_warnings},
-    }
-
-    write_report(rule_path, rule, overall_pass, results)
-    print(f"\n  Overall: {'✅ PASSED' if overall_pass else '❌ FAILED'}")
-    return overall_pass
-
+# ─────────────────────────────────────────────────────────────────────────────
+# Main
+# ─────────────────────────────────────────────────────────────────────────────
 
 def main():
-    if len(sys.argv) < 2 or not sys.argv[1].strip():
-        print("No rule files specified.")
+    parser = argparse.ArgumentParser(description="Test Sigma rules against JSON log samples.")
+    parser.add_argument(
+        "--type",
+        choices=LOG_TYPES,
+        help="Only test rules of this log type (default: all).",
+    )
+    parser.add_argument(
+        "--report-file",
+        type=Path,
+        default=RESULTS_ROOT / "test_report.md",
+        help="Path to write the Markdown report (default: results/test_report.md).",
+    )
+    args = parser.parse_args()
+
+    types_to_test = [args.type] if args.type else LOG_TYPES
+    results       = run_tests(types_to_test)
+
+    if not results:
+        log.warning("No rules were tested.")
         sys.exit(0)
 
-    rule_files = sys.argv[1].strip().split()
-    all_passed = True
+    # Write report
+    report_path: Path = args.report_file
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(generate_markdown_report(results), encoding="utf-8")
+    log.info("Report written to: %s", report_path)
 
-    for f in rule_files:
-        path = REPO_ROOT / f.strip()
-        if not path.exists():
-            print(f"File not found, skipping: {path}")
-            continue
-        if not test_rule(path):
-            all_passed = False
+    # Summary
+    passed   = sum(1 for r in results if r.status == "pass")
+    no_match = sum(1 for r in results if r.status == "no_match")
+    errors   = sum(1 for r in results if r.status == "error")
 
-    print(f"\n{'='*60}")
-    print(f"Pipeline complete — {'ALL PASSED ✅' if all_passed else 'SOME FAILED ❌'}")
-    print(f"{'='*60}")
-    sys.exit(0 if all_passed else 1)
+    log.info("─" * 50)
+    log.info("RESULTS: %d passed | %d no-match | %d errors", passed, no_match, errors)
+
+    if no_match > 0:
+        log.error("PIPELINE FAIL: %d rule(s) matched no log samples.", no_match)
+        log.error("Every committed rule must have at least one matching log sample.")
+        sys.exit(1)
+
+    if errors > 0:
+        log.error("PIPELINE FAIL: %d rule(s) had evaluation errors.", errors)
+        sys.exit(2)
+
+    log.info("All rules passed ✓")
+    sys.exit(0)
 
 
 if __name__ == "__main__":
