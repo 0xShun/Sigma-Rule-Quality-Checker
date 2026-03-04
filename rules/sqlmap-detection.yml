@@ -1,0 +1,23 @@
+title: SQLmap Tool Detected via User-Agent
+id: test-0001-0000-0000-000000000001
+status: test
+description: >
+  Detects HTTP requests where the user-agent identifies sqlmap,
+  an automated SQL injection and database takeover tool.
+  This rule is designed to validate the Apache log pipeline.
+author: Detection Engineering Team
+date: 2024/03/04
+logsource:
+    category: webserver
+    product: apache
+detection:
+    selection:
+        log_type: apache
+        user_agent|contains: 'sqlmap'
+    condition: selection
+falsepositives:
+    - Authorized penetration testing
+level: high
+tags:
+    - attack.initial_access
+    - attack.t1190
