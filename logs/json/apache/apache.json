@@ -1,0 +1,2084 @@
+[
+  {
+    "raw": "[",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "["
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"192.168.1.10 - - [04/Mar/2024:08:00:01 +0000] \\\"GET /index.html HTTP/1.1\\\" 200 5120 \\\"-\\\" \\\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"192.168.1.10 - - [04/Mar/2024:08:00:01 +0000] \\\"GET /index.html HTTP/1.1\\\" 200 5120 \\\"-\\\" \\\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"192.168.1.10\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"192.168.1.10\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:00:01 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:00:01 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:00:01+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:00:01+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/index.html\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/index.html\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 200,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 200,"
+  },
+  {
+    "raw": "\"response_bytes\": 5120,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 5120,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/index.html\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/index.html\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"192.168.1.11 - jsmith [04/Mar/2024:08:00:45 +0000] \\\"POST /login HTTP/1.1\\\" 200 312 \\\"https://corp.example.com/login\\\" \\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"192.168.1.11 - jsmith [04/Mar/2024:08:00:45 +0000] \\\"POST /login HTTP/1.1\\\" 200 312 \\\"https://corp.example.com/login\\\" \\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"192.168.1.11\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"192.168.1.11\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"jsmith\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"jsmith\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:00:45 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:00:45 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:00:45+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:00:45+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"POST\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"POST\","
+  },
+  {
+    "raw": "\"uri\": \"/login\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/login\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 200,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 200,"
+  },
+  {
+    "raw": "\"response_bytes\": 312,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 312,"
+  },
+  {
+    "raw": "\"referer\": \"https://corp.example.com/login\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"https://corp.example.com/login\","
+  },
+  {
+    "raw": "\"user_agent\": \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)\","
+  },
+  {
+    "raw": "\"method\": \"POST\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"POST\","
+  },
+  {
+    "raw": "\"uri_path\": \"/login\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/login\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"10.0.0.55 - - [04/Mar/2024:08:01:10 +0000] \\\"GET /admin/config.php HTTP/1.1\\\" 403 512 \\\"-\\\" \\\"python-requests/2.28.0\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"10.0.0.55 - - [04/Mar/2024:08:01:10 +0000] \\\"GET /admin/config.php HTTP/1.1\\\" 403 512 \\\"-\\\" \\\"python-requests/2.28.0\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"10.0.0.55\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"10.0.0.55\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:01:10 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:01:10 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:01:10+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:01:10+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/admin/config.php\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/admin/config.php\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 403,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 403,"
+  },
+  {
+    "raw": "\"response_bytes\": 512,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 512,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"python-requests/2.28.0\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"python-requests/2.28.0\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/admin/config.php\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/admin/config.php\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"185.220.101.5 - - [04/Mar/2024:08:02:33 +0000] \\\"GET /wp-admin/install.php HTTP/1.1\\\" 404 209 \\\"-\\\" \\\"Mozlila/5.0 (compatible; Googlebot/2.1)\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"185.220.101.5 - - [04/Mar/2024:08:02:33 +0000] \\\"GET /wp-admin/install.php HTTP/1.1\\\" 404 209 \\\"-\\\" \\\"Mozlila/5.0 (compatible; Googlebot/2.1)\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"185.220.101.5\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"185.220.101.5\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:02:33 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:02:33 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:02:33+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:02:33+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/wp-admin/install.php\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/wp-admin/install.php\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 404,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 404,"
+  },
+  {
+    "raw": "\"response_bytes\": 209,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 209,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"Mozlila/5.0 (compatible; Googlebot/2.1)\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Mozlila/5.0 (compatible; Googlebot/2.1)\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/wp-admin/install.php\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/wp-admin/install.php\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"10.0.0.55 - - [04/Mar/2024:08:02:55 +0000] \\\"GET /etc/passwd HTTP/1.1\\\" 400 0 \\\"-\\\" \\\"curl/7.85.0\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"10.0.0.55 - - [04/Mar/2024:08:02:55 +0000] \\\"GET /etc/passwd HTTP/1.1\\\" 400 0 \\\"-\\\" \\\"curl/7.85.0\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"10.0.0.55\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"10.0.0.55\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:02:55 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:02:55 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:02:55+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:02:55+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/etc/passwd\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/etc/passwd\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 400,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 400,"
+  },
+  {
+    "raw": "\"response_bytes\": 0,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 0,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"curl/7.85.0\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"curl/7.85.0\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/etc/passwd\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/etc/passwd\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"192.168.1.12 - - [04/Mar/2024:08:03:20 +0000] \\\"GET /api/v1/users?page=1&limit=50 HTTP/1.1\\\" 200 8740 \\\"https://corp.example.com/dashboard\\\" \\\"Mozilla/5.0\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"192.168.1.12 - - [04/Mar/2024:08:03:20 +0000] \\\"GET /api/v1/users?page=1&limit=50 HTTP/1.1\\\" 200 8740 \\\"https://corp.example.com/dashboard\\\" \\\"Mozilla/5.0\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"192.168.1.12\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"192.168.1.12\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:03:20 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:03:20 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:03:20+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:03:20+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/api/v1/users?page=1&limit=50\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/api/v1/users?page=1&limit=50\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 200,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 200,"
+  },
+  {
+    "raw": "\"response_bytes\": 8740,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 8740,"
+  },
+  {
+    "raw": "\"referer\": \"https://corp.example.com/dashboard\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"https://corp.example.com/dashboard\","
+  },
+  {
+    "raw": "\"user_agent\": \"Mozilla/5.0\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Mozilla/5.0\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/api/v1/users\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/api/v1/users\","
+  },
+  {
+    "raw": "\"uri_query\": \"page=1&limit=50\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": \"page=1&limit=50\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"10.0.0.55 - - [04/Mar/2024:08:04:01 +0000] \\\"GET /?id=1' OR '1'='1 HTTP/1.1\\\" 400 0 \\\"-\\\" \\\"sqlmap/1.7\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"10.0.0.55 - - [04/Mar/2024:08:04:01 +0000] \\\"GET /?id=1' OR '1'='1 HTTP/1.1\\\" 400 0 \\\"-\\\" \\\"sqlmap/1.7\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"10.0.0.55\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"10.0.0.55\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:04:01 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:04:01 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:04:01+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:04:01+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/?id=1' OR '1'='1\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/?id=1' OR '1'='1\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 400,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 400,"
+  },
+  {
+    "raw": "\"response_bytes\": 0,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 0,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"sqlmap/1.7\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"sqlmap/1.7\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/\","
+  },
+  {
+    "raw": "\"uri_query\": \"id=1' OR '1'='1\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": \"id=1' OR '1'='1\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"192.168.1.10 - - [04/Mar/2024:08:05:15 +0000] \\\"GET /static/app.js HTTP/1.1\\\" 304 0 \\\"https://corp.example.com/\\\" \\\"Mozilla/5.0\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"192.168.1.10 - - [04/Mar/2024:08:05:15 +0000] \\\"GET /static/app.js HTTP/1.1\\\" 304 0 \\\"https://corp.example.com/\\\" \\\"Mozilla/5.0\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"192.168.1.10\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"192.168.1.10\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:05:15 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:05:15 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:05:15+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:05:15+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/static/app.js\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/static/app.js\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 304,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 304,"
+  },
+  {
+    "raw": "\"response_bytes\": 0,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 0,"
+  },
+  {
+    "raw": "\"referer\": \"https://corp.example.com/\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"https://corp.example.com/\","
+  },
+  {
+    "raw": "\"user_agent\": \"Mozilla/5.0\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Mozilla/5.0\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/static/app.js\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/static/app.js\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"45.33.32.156 - - [04/Mar/2024:08:06:00 +0000] \\\"GET /.env HTTP/1.1\\\" 404 162 \\\"-\\\" \\\"Go-http-client/1.1\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"45.33.32.156 - - [04/Mar/2024:08:06:00 +0000] \\\"GET /.env HTTP/1.1\\\" 404 162 \\\"-\\\" \\\"Go-http-client/1.1\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"45.33.32.156\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"45.33.32.156\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:06:00 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:06:00 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:06:00+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:06:00+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/.env\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/.env\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 404,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 404,"
+  },
+  {
+    "raw": "\"response_bytes\": 162,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 162,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"Go-http-client/1.1\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Go-http-client/1.1\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/.env\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/.env\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"45.33.32.156 - - [04/Mar/2024:08:06:01 +0000] \\\"GET /.git/config HTTP/1.1\\\" 404 162 \\\"-\\\" \\\"Go-http-client/1.1\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"45.33.32.156 - - [04/Mar/2024:08:06:01 +0000] \\\"GET /.git/config HTTP/1.1\\\" 404 162 \\\"-\\\" \\\"Go-http-client/1.1\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"45.33.32.156\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"45.33.32.156\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:06:01 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:06:01 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:06:01+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:06:01+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/.git/config\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/.git/config\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 404,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 404,"
+  },
+  {
+    "raw": "\"response_bytes\": 162,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 162,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"Go-http-client/1.1\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Go-http-client/1.1\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/.git/config\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/.git/config\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"45.33.32.156 - - [04/Mar/2024:08:06:02 +0000] \\\"GET /config.yml HTTP/1.1\\\" 404 162 \\\"-\\\" \\\"Go-http-client/1.1\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"45.33.32.156 - - [04/Mar/2024:08:06:02 +0000] \\\"GET /config.yml HTTP/1.1\\\" 404 162 \\\"-\\\" \\\"Go-http-client/1.1\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"45.33.32.156\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"45.33.32.156\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:06:02 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:06:02 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:06:02+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:06:02+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/config.yml\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/config.yml\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 404,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 404,"
+  },
+  {
+    "raw": "\"response_bytes\": 162,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 162,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"Go-http-client/1.1\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Go-http-client/1.1\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/config.yml\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/config.yml\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"45.33.32.156 - - [04/Mar/2024:08:06:03 +0000] \\\"GET /backup.zip HTTP/1.1\\\" 404 162 \\\"-\\\" \\\"Go-http-client/1.1\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"45.33.32.156 - - [04/Mar/2024:08:06:03 +0000] \\\"GET /backup.zip HTTP/1.1\\\" 404 162 \\\"-\\\" \\\"Go-http-client/1.1\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"45.33.32.156\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"45.33.32.156\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:06:03 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:06:03 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:06:03+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:06:03+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/backup.zip\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/backup.zip\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 404,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 404,"
+  },
+  {
+    "raw": "\"response_bytes\": 162,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 162,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"Go-http-client/1.1\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Go-http-client/1.1\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/backup.zip\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/backup.zip\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"192.168.1.13 - admin [04/Mar/2024:08:10:00 +0000] \\\"GET /admin/dashboard HTTP/1.1\\\" 200 15360 \\\"https://corp.example.com/admin\\\" \\\"Mozilla/5.0\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"192.168.1.13 - admin [04/Mar/2024:08:10:00 +0000] \\\"GET /admin/dashboard HTTP/1.1\\\" 200 15360 \\\"https://corp.example.com/admin\\\" \\\"Mozilla/5.0\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"192.168.1.13\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"192.168.1.13\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"admin\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"admin\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:10:00 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:10:00 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:10:00+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:10:00+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/admin/dashboard\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/admin/dashboard\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 200,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 200,"
+  },
+  {
+    "raw": "\"response_bytes\": 15360,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 15360,"
+  },
+  {
+    "raw": "\"referer\": \"https://corp.example.com/admin\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"https://corp.example.com/admin\","
+  },
+  {
+    "raw": "\"user_agent\": \"Mozilla/5.0\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Mozilla/5.0\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/admin/dashboard\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/admin/dashboard\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"10.0.0.99 - - [04/Mar/2024:08:15:30 +0000] \\\"POST /api/v1/upload HTTP/1.1\\\" 200 256 \\\"-\\\" \\\"python-requests/2.28.0\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"10.0.0.99 - - [04/Mar/2024:08:15:30 +0000] \\\"POST /api/v1/upload HTTP/1.1\\\" 200 256 \\\"-\\\" \\\"python-requests/2.28.0\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"10.0.0.99\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"10.0.0.99\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:15:30 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:15:30 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:15:30+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:15:30+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"POST\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"POST\","
+  },
+  {
+    "raw": "\"uri\": \"/api/v1/upload\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/api/v1/upload\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 200,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 200,"
+  },
+  {
+    "raw": "\"response_bytes\": 256,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 256,"
+  },
+  {
+    "raw": "\"referer\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"-\","
+  },
+  {
+    "raw": "\"user_agent\": \"python-requests/2.28.0\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"python-requests/2.28.0\","
+  },
+  {
+    "raw": "\"method\": \"POST\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"POST\","
+  },
+  {
+    "raw": "\"uri_path\": \"/api/v1/upload\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/api/v1/upload\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "{",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "{"
+  },
+  {
+    "raw": "\"raw\": \"192.168.1.10 - - [04/Mar/2024:08:20:00 +0000] \\\"GET /nonexistent-page HTTP/1.1\\\" 404 512 \\\"https://corp.example.com/\\\" \\\"Mozilla/5.0\\\"\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"raw\": \"192.168.1.10 - - [04/Mar/2024:08:20:00 +0000] \\\"GET /nonexistent-page HTTP/1.1\\\" 404 512 \\\"https://corp.example.com/\\\" \\\"Mozilla/5.0\\\"\","
+  },
+  {
+    "raw": "\"log_type\": \"apache\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"log_type\": \"apache\","
+  },
+  {
+    "raw": "\"format\": \"combined\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"format\": \"combined\","
+  },
+  {
+    "raw": "\"client_ip\": \"192.168.1.10\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"client_ip\": \"192.168.1.10\","
+  },
+  {
+    "raw": "\"ident\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"ident\": \"-\","
+  },
+  {
+    "raw": "\"auth_user\": \"-\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"auth_user\": \"-\","
+  },
+  {
+    "raw": "\"timestamp_raw\": \"04/Mar/2024:08:20:00 +0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp_raw\": \"04/Mar/2024:08:20:00 +0000\","
+  },
+  {
+    "raw": "\"timestamp\": \"2024-03-04T08:20:00+0000\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"timestamp\": \"2024-03-04T08:20:00+0000\","
+  },
+  {
+    "raw": "\"request\": {",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"request\": {"
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri\": \"/nonexistent-page\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri\": \"/nonexistent-page\","
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "},",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "},"
+  },
+  {
+    "raw": "\"status\": 404,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"status\": 404,"
+  },
+  {
+    "raw": "\"response_bytes\": 512,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"response_bytes\": 512,"
+  },
+  {
+    "raw": "\"referer\": \"https://corp.example.com/\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"referer\": \"https://corp.example.com/\","
+  },
+  {
+    "raw": "\"user_agent\": \"Mozilla/5.0\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"user_agent\": \"Mozilla/5.0\","
+  },
+  {
+    "raw": "\"method\": \"GET\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"method\": \"GET\","
+  },
+  {
+    "raw": "\"uri_path\": \"/nonexistent-page\",",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_path\": \"/nonexistent-page\","
+  },
+  {
+    "raw": "\"uri_query\": null,",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"uri_query\": null,"
+  },
+  {
+    "raw": "\"http_version\": \"HTTP/1.1\"",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "\"http_version\": \"HTTP/1.1\""
+  },
+  {
+    "raw": "}",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "}"
+  },
+  {
+    "raw": "]",
+    "log_type": "apache",
+    "format": "unparsed",
+    "message": "]"
+  }
+]
