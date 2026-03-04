@@ -1,0 +1,47 @@
+name: Sigma Rule Tester
+
+on:
+  push:
+    paths:
+      - 'rules/**.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  test-sigma-rules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install sigma-cli pySigma-backend-splunk pySigma-pipeline-windows pyyaml
+
+      - name: Get changed rule files
+        id: changed
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'rules/**.yml' | tr '\n' ' ')
+          echo "files=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed rules: $CHANGED"
+
+      - name: Run Sigma tests
+        run: |
+          python scripts/test_rules.py "${{ steps.changed.outputs.files }}"
+
+      - name: Commit reports
+        run: |
+          git config user.name "sigma-pipeline[bot]"
+          git config user.email "sigma-pipeline@users.noreply.github.com"
+          git add reports/passed/ reports/failed/
+          git diff --staged --quiet || git commit -m "ci: sigma test reports for push ${{ github.sha }}"
+          git push
