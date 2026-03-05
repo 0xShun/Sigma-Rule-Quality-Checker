@@ -53,10 +53,11 @@ jobs:
           pip install pyyaml
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # ── 4. Detect which rule files changed (push and PR only) ─────────────
-      # On a push:  diff against the previous commit
-      # On a PR:    diff against the base branch
-      # On manual:  skip — test by type instead
+      # ── 4. Always create results dir so later steps never fail on missing folder
+      - name: Prepare results directory
+        run: mkdir -p results
+
+      # ── 5. Detect which rule files changed (push and PR only) ─────────────
       - name: Detect changed rule files
         id: changed
         if: github.event_name == 'push' || github.event_name == 'pull_request'
@@ -64,13 +65,14 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
               | grep '^rules/.*\.yml$' \
-              | tr '\n' ' ')
+              | tr '\n' ' ' \
+              | xargs)        # xargs strips leading/trailing whitespace
           else
-            # Pull request — diff against base branch
             git fetch origin ${{ github.base_ref }} --depth=1
             CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
               | grep '^rules/.*\.yml$' \
-              | tr '\n' ' ')
+              | tr '\n' ' ' \
+              | xargs)
           fi
 
           echo "files=${CHANGED}" >> $GITHUB_OUTPUT
@@ -81,35 +83,36 @@ jobs:
             echo "Changed rule files: ${CHANGED}"
           fi
 
-      # ── 5a. Test only changed rule files (push / PR) ──────────────────────
+      # ── 6a. Test only changed rule files (push / PR) ──────────────────────
       - name: Test changed rules
         id: sigma_test
         if: (github.event_name == 'push' || github.event_name == 'pull_request') && steps.changed.outputs.files != ''
         run: |
-          mkdir -p results
           FILES="${{ steps.changed.outputs.files }}"
           echo "Testing changed rule file(s): $FILES"
           python scripts/test_sigma_rules.py \
             --rule-files $FILES \
             --report-file results/test_report.md
-        continue-on-error: true
+          # Capture exit code explicitly — do NOT use continue-on-error
+          # so the outcome is accurate for the enforce step below
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        # No continue-on-error — we want the real outcome
 
-      # ── 5b. Skip message if no rule files changed (e.g. only logs changed) ─
+      # ── 6b. No rule files changed (e.g. only logs pushed) ─────────────────
       - name: No rule changes detected
         if: (github.event_name == 'push' || github.event_name == 'pull_request') && steps.changed.outputs.files == ''
         run: |
-          mkdir -p results
           echo "# Sigma Rule Test Report" > results/test_report.md
           echo "" >> results/test_report.md
           echo "No rule files were changed in this push — skipping rule tests." >> results/test_report.md
-          echo "No rule files changed in this push — skipping rule tests."
+          echo "No rule files changed — skipping."
 
-      # ── 5c. Manual trigger — test by type or all ─────────────────────────
+      # ── 6c. Manual trigger — test by type or all ─────────────────────────
       - name: Test rules (manual trigger)
+        id: sigma_test_manual
         if: github.event_name == 'workflow_dispatch'
         run: |
           TYPE="${{ github.event.inputs.log_type }}"
-          mkdir -p results
           if [ -z "$TYPE" ]; then
             echo "Testing all log types..."
             python scripts/test_sigma_rules.py --report-file results/test_report.md
@@ -117,26 +120,27 @@ jobs:
             echo "Testing log type: $TYPE"
             python scripts/test_sigma_rules.py --type "$TYPE" --report-file results/test_report.md
           fi
-        continue-on-error: true
 
-      # ── 6. Upload test report as artifact ────────────────────────────────
+      # ── 7. Upload test report as artifact ────────────────────────────────
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: sigma-test-report
           path: results/test_report.md
-          retention-days: 30
+          if-no-files-found: warn   # Warn instead of error if report missing
 
-      # ── 7. Post report to GitHub Actions summary ──────────────────────────
+      # ── 8. Post report to GitHub Actions summary ──────────────────────────
       - name: Post summary
         if: always()
         run: |
           if [ -f results/test_report.md ]; then
             cat results/test_report.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No test report generated." >> $GITHUB_STEP_SUMMARY
           fi
 
-      # ── 8. Post PR comment with results ───────────────────────────────────
+      # ── 9. Post PR comment with results ───────────────────────────────────
       - name: Comment on PR
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
@@ -175,7 +179,7 @@ jobs:
               });
             }
 
-      # ── 9. Commit report back to repo (push to main only) ─────────────────
+      # ── 10. Commit report back to repo (push to main only) ────────────────
       - name: Commit test report
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -196,7 +200,19 @@ jobs:
             git push
           fi
 
-      # ── 10. Enforce strict pass/fail ──────────────────────────────────────
+      # ── 11. Enforce strict pass/fail ──────────────────────────────────────
+      # steps.sigma_test.outcome is 'failure' when the script exits non-zero
+      # (no continue-on-error, so outcome is accurate)
+      # steps.sigma_test_manual.outcome handles the manual trigger path
       - name: Enforce pipeline result
-        if: steps.sigma_test.outcome == 'failure'
-        run: exit 1
+        if: always()
+        run: |
+          OUTCOME_PUSH="${{ steps.sigma_test.outcome }}"
+          OUTCOME_MANUAL="${{ steps.sigma_test_manual.outcome }}"
+
+          if [ "$OUTCOME_PUSH" = "failure" ] || [ "$OUTCOME_MANUAL" = "failure" ]; then
+            echo "One or more rules failed — see test report above."
+            exit 1
+          fi
+
+          echo "Pipeline passed."
