@@ -1,0 +1,60 @@
+title: Potential Data Exfiltration via Large HTTP Response
+id: d4e5f6a7-0001-4000-8000-000000000001
+status: test
+description: >
+  Detects suspiciously large HTTP 200 responses from sensitive API endpoints,
+  export paths, report files, and backup locations. Legitimate users rarely
+  download multi-megabyte payloads from these endpoints in a single request.
+  Combined with scripting tool user-agents (python-requests, curl) this
+  pattern strongly indicates automated data exfiltration.
+  
+  Response size threshold: 500KB (524288 bytes).
+  Tune upward if your application legitimately serves large files to users.
+author: Detection Engineering Team
+date: 2024/03/05
+logsource:
+    category: webserver
+    product: apache
+detection:
+    selection_endpoint:
+        log_type: apache
+        status: 200
+        uri_path|contains:
+            - '/export'
+            - '/backup'
+            - '/dump'
+            - '/reports'
+            - '/download'
+            - '/api/v1/users'
+            - '/api/v1/customers'
+            - '/api/v1/employees'
+            - '/api/v1/orders'
+            - '/api/v1/transactions'
+            - '/api/v1/payments'
+            - '/api/v1/invoices'
+            - '/api/v1/credentials'
+            - '/api/v1/tokens'
+            - '/api/v1/api-keys'
+    selection_size:
+        log_type: apache
+        response_bytes|gte: 524288
+    selection_useragent:
+        log_type: apache
+        user_agent|contains:
+            - 'python-requests'
+            - 'curl'
+            - 'wget'
+            - 'Go-http-client'
+            - 'libwww-perl'
+            - 'axios'
+    condition: selection_endpoint and selection_size and selection_useragent
+falsepositives:
+    - Authorized bulk data exports by internal teams using scripts
+    - Scheduled ETL jobs pulling reports via API
+level: critical
+tags:
+    - attack.exfiltration
+    - attack.t1530
+    - attack.t1048.003
+    - attack.collection
+    - attack.t1213
